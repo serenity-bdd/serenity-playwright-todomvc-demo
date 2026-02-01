@@ -41,8 +41,10 @@ class WhenAddingTodosTest extends SerenityPlaywrightTest {
         todo.openApplication();
         todo.addTodos("Buy milk", "Walk the dog", "Do laundry");
 
-        assertThat(todo.visibleTodoCount()).isEqualTo(3);
-        assertThat(todo.visibleTodos()).containsExactly("Buy milk", "Walk the dog", "Do laundry");
+        assertThat(todo.visibleTodos()).containsExactly(
+                "Buy milk",
+                "Walk the dog",
+                "Do laundry");
     }
 
     @Test
