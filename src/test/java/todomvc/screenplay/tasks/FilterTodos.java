@@ -13,6 +13,7 @@ import todomvc.screenplay.ui.TodoList;
  *   actor.attemptsTo(FilterTodos.toShowAll());
  *   actor.attemptsTo(FilterTodos.toShowActive());
  *   actor.attemptsTo(FilterTodos.toShowCompleted());
+ *   actor.attemptsTo(FilterTodos.toShow("Active"));
  */
 public class FilterTodos {
 
@@ -26,6 +27,19 @@ public class FilterTodos {
 
     public static Task toShowCompleted() {
         return new FilterToShowCompleted();
+    }
+
+    /**
+     * Filter by name - useful for Cucumber scenarios.
+     * @param filterType "All", "Active", or "Completed"
+     */
+    public static Task toShow(String filterType) {
+        return switch (filterType.toLowerCase()) {
+            case "all" -> toShowAll();
+            case "active" -> toShowActive();
+            case "completed" -> toShowCompleted();
+            default -> throw new IllegalArgumentException("Unknown filter type: " + filterType);
+        };
     }
 }
 

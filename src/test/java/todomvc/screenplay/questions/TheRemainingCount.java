@@ -22,11 +22,15 @@ public class TheRemainingCount implements Question<Integer> {
     @Override
     @Step("{0} checks the remaining todo count")
     public Integer answeredBy(Actor actor) {
-        String countText = BrowseTheWebWithPlaywright.as(actor)
-            .getCurrentPage()
-            .locator(TodoList.TODO_COUNT.asSelector())
-            .textContent();
+        var page = BrowseTheWebWithPlaywright.as(actor).getCurrentPage();
+        var countLocator = page.locator(TodoList.TODO_COUNT.asSelector());
 
+        // If the todo count element is not visible (no items), return 0
+        if (countLocator.count() == 0 || !countLocator.isVisible()) {
+            return 0;
+        }
+
+        String countText = countLocator.textContent();
         Matcher matcher = COUNT_PATTERN.matcher(countText);
         if (matcher.find()) {
             return Integer.parseInt(matcher.group(1));

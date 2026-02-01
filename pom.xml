@@ -24,6 +24,7 @@
         <serenity.version>5.1.1-SNAPSHOT</serenity.version>
         <playwright.version>1.58.0</playwright.version>
         <junit.version>6.0.1</junit.version>
+        <cucumber.version>7.34.2</cucumber.version>
         <assertj.version>3.27.3</assertj.version>
 
         <!-- Plugin versions -->
@@ -34,6 +35,18 @@
         <!-- Test execution settings -->
         <parallel.tests>4</parallel.tests>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- Serenity Playwright Integration -->
@@ -115,6 +128,35 @@
             <version>1.5.16</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- Serenity Cucumber Integration -->
+        <dependency>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-cucumber</artifactId>
+            <version>${serenity.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Cucumber -->
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -148,8 +190,10 @@
                 <configuration>
                     <includes>
                         <include>**/*Test.java</include>
+                        <include>**/CucumberTestSuite.java</include>
                     </includes>
-                    <!-- JUnit 5 parallel execution configured in junit-platform.properties -->
+                    <!-- Disable parallel execution for Cucumber tests for now -->
+                    <parallel>none</parallel>
                 </configuration>
                 <executions>
                     <execution>
