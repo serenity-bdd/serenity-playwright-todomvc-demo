@@ -21,7 +21,7 @@
         <maven.compiler.target>17</maven.compiler.target>
 
         <!-- Core versions -->
-        <serenity.version>5.1.0</serenity.version>
+        <serenity.version>5.1.1-SNAPSHOT</serenity.version>
         <playwright.version>1.57.0</playwright.version>
         <junit.version>6.0.1</junit.version>
         <assertj.version>3.27.3</assertj.version>
@@ -40,6 +40,30 @@
         <dependency>
             <groupId>net.serenity-bdd</groupId>
             <artifactId>serenity-playwright</artifactId>
+            <version>${serenity.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Serenity Screenplay Playwright Integration -->
+        <dependency>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-screenplay-playwright</artifactId>
+            <version>${serenity.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Serenity Screenplay -->
+        <dependency>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-screenplay</artifactId>
+            <version>${serenity.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Serenity Ensure (fluent assertions for Screenplay) -->
+        <dependency>
+            <groupId>net.serenity-bdd</groupId>
+            <artifactId>serenity-ensure</artifactId>
             <version>${serenity.version}</version>
             <scope>test</scope>
         </dependency>
