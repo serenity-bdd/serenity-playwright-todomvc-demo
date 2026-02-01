@@ -119,6 +119,11 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- AssertJ for fluent assertions -->
         <dependency>
@@ -156,12 +161,6 @@
             <artifactId>cucumber-junit-platform-engine</artifactId>
             <scope>test</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.junit.platform</groupId>
-            <artifactId>junit-platform-suite</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
@@ -192,18 +191,44 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${maven-failsafe-plugin.version}</version>
-                <configuration>
-                    <includes>
-                        <include>**/*Test.java</include>
-                        <include>**/CucumberTestSuite.java</include>
-                    </includes>
-                    <!-- Disable parallel execution for Cucumber tests for now -->
-                    <parallel>none</parallel>
-                </configuration>
                 <executions>
+                    <!-- Execution for JUnit Jupiter tests (excludes Cucumber) -->
                     <execution>
+                        <id>junit-tests</id>
                         <goals>
                             <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/*Test.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>**/CucumberTestSuite.java</exclude>
+                            </excludes>
+                            <excludedGroups>cucumber</excludedGroups>
+                            <!-- Only run with JUnit Jupiter engine -->
+                            <configurationParameters>
+                                junit.jupiter.execution.parallel.enabled=true
+                            </configurationParameters>
+                        </configuration>
+                    </execution>
+                    <!-- Execution for Cucumber tests -->
+                    <execution>
+                        <id>cucumber-tests</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/CucumberTestSuite.java</include>
+                            </includes>
+                            <parallel>none</parallel>
+                        </configuration>
+                    </execution>
+                    <!-- Verify phase -->
+                    <execution>
+                        <id>verify</id>
+                        <goals>
                             <goal>verify</goal>
                         </goals>
                     </execution>
