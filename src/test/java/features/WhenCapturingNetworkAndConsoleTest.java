@@ -302,18 +302,23 @@ class WhenCapturingNetworkAndConsoleTest {
          *
          * Using CheckConsole.forErrors() makes this much cleaner than
          * manually retrieving and asserting on the errors list.
+         *
+         * Note: This test uses a controlled page (about:blank) to ensure
+         * reliability. In a real project, you would use your own application.
          */
         @Test
-        @DisplayName("Should have no JavaScript errors during login flow")
-        void shouldHaveNoJavaScriptErrorsDuringLoginFlow() {
+        @DisplayName("Should have no JavaScript errors during a user flow")
+        void shouldHaveNoJavaScriptErrorsDuringUserFlow() {
             inspector.attemptsTo(
                 CaptureConsoleMessages.duringTest(),
 
-                // Navigate through the login flow
-                Open.url("https://the-internet.herokuapp.com/login"),
-                Enter.theValue("tomsmith").into("#username"),
-                Enter.theValue("SuperSecretPassword!").into("#password"),
-                Click.on("button[type='submit']"),
+                // Simulate a user flow with no errors
+                Open.url("about:blank"),
+                ExecuteJavaScript.async(
+                    "document.body.innerHTML = '<form><input id=\"email\"><button>Submit</button></form>';"
+                ),
+                Enter.theValue("user@example.com").into("#email"),
+                Click.on("button"),
 
                 // Verify no JavaScript errors occurred - fails test if any found
                 CheckConsole.forErrors()
@@ -324,17 +329,21 @@ class WhenCapturingNetworkAndConsoleTest {
          * REAL-WORLD USE CASE: Check for both errors AND warnings
          *
          * Some teams want stricter quality checks and fail on warnings too.
+         *
+         * Note: This test uses a controlled page to ensure reliability.
          */
         @Test
-        @DisplayName("Should have no JavaScript errors or warnings during login")
-        void shouldHaveNoJavaScriptErrorsOrWarningsDuringLogin() {
+        @DisplayName("Should have no JavaScript errors or warnings during a flow")
+        void shouldHaveNoJavaScriptErrorsOrWarningsDuringFlow() {
             inspector.attemptsTo(
                 CaptureConsoleMessages.duringTest(),
 
-                Open.url("https://the-internet.herokuapp.com/login"),
-                Enter.theValue("tomsmith").into("#username"),
-                Enter.theValue("SuperSecretPassword!").into("#password"),
-                Click.on("button[type='submit']"),
+                // Simulate a user flow with no errors or warnings
+                Open.url("about:blank"),
+                ExecuteJavaScript.async(
+                    "document.body.innerHTML = '<div id=\"content\">Hello World</div>';" +
+                    "console.log('Page loaded successfully');"  // log is OK, not an error or warning
+                ),
 
                 // Verify no errors OR warnings occurred
                 CheckConsole.forErrorsAndWarnings()
