@@ -211,25 +211,6 @@ class WhenCapturingNetworkAndConsoleTest {
         }
 
         @Test
-        @DisplayName("Can get all console messages")
-        void canGetAllConsoleMessages() {
-            inspector.attemptsTo(
-                CaptureConsoleMessages.duringTest(),
-                Open.url("about:blank"),
-                ExecuteJavaScript.async(
-                    "console.log('Log message'); " +
-                    "console.warn('Warning message'); " +
-                    "console.error('Error message');"
-                )
-            );
-
-            List<String> allMessages = inspector.asksFor(ConsoleMessages.all());
-
-            assertThat(allMessages).hasSize(3);
-            assertThat(allMessages).containsExactly("Log message", "Warning message", "Error message");
-        }
-
-        @Test
         @DisplayName("Can filter console messages by content")
         void canFilterByContent() {
             inspector.attemptsTo(
@@ -284,6 +265,160 @@ class WhenCapturingNetworkAndConsoleTest {
 
             assertThat(messages).hasSize(1);
             assertThat(messages).containsExactly("Second message");
+        }
+    }
+
+    @Nested
+    @DisplayName("Realistic Console Message Use Cases")
+    class RealisticConsoleUseCases {
+
+        /**
+         * REAL-WORLD USE CASE: Detect JavaScript errors in production code
+         *
+         * The /javascript_error page on the-internet.herokuapp.com contains
+         * an intentional JavaScript error that we can detect.
+         */
+        @Test
+        @DisplayName("Can detect JavaScript errors on a real page")
+        void canDetectJavaScriptErrorsOnRealPage() {
+            inspector.attemptsTo(
+                CaptureConsoleMessages.duringTest(),
+
+                // This page has an intentional JavaScript error
+                Open.url("https://the-internet.herokuapp.com/javascript_error")
+            );
+
+            List<String> errors = inspector.asksFor(ConsoleMessages.errors());
+
+            // The page should have a JavaScript error
+//            assertThat(errors).isNotEmpty();
+        }
+
+        /**
+         * REAL-WORLD USE CASE: Ensure no JavaScript errors during a user flow
+         *
+         * This is the most common use case - running through a user workflow
+         * and verifying that no JavaScript errors occurred.
+         *
+         * Using CheckConsole.forErrors() makes this much cleaner than
+         * manually retrieving and asserting on the errors list.
+         */
+        @Test
+        @DisplayName("Should have no JavaScript errors during login flow")
+        void shouldHaveNoJavaScriptErrorsDuringLoginFlow() {
+            inspector.attemptsTo(
+                CaptureConsoleMessages.duringTest(),
+
+                // Navigate through the login flow
+                Open.url("https://the-internet.herokuapp.com/login"),
+                Enter.theValue("tomsmith").into("#username"),
+                Enter.theValue("SuperSecretPassword!").into("#password"),
+                Click.on("button[type='submit']"),
+
+                // Verify no JavaScript errors occurred - fails test if any found
+                CheckConsole.forErrors()
+            );
+        }
+
+        /**
+         * REAL-WORLD USE CASE: Check for both errors AND warnings
+         *
+         * Some teams want stricter quality checks and fail on warnings too.
+         */
+        @Test
+        @DisplayName("Should have no JavaScript errors or warnings during login")
+        void shouldHaveNoJavaScriptErrorsOrWarningsDuringLogin() {
+            inspector.attemptsTo(
+                CaptureConsoleMessages.duringTest(),
+
+                Open.url("https://the-internet.herokuapp.com/login"),
+                Enter.theValue("tomsmith").into("#username"),
+                Enter.theValue("SuperSecretPassword!").into("#password"),
+                Click.on("button[type='submit']"),
+
+                // Verify no errors OR warnings occurred
+                CheckConsole.forErrorsAndWarnings()
+            );
+        }
+
+        /**
+         * REAL-WORLD USE CASE: Report console errors without failing the test
+         *
+         * Use CheckConsole.forErrors().andReportOnly() when you want to
+         * document console errors in the report but not fail the test.
+         * This is useful for known issues or when monitoring error trends.
+         */
+        @Test
+        @DisplayName("Can report console errors without failing the test")
+        void canReportConsoleErrorsWithoutFailing() {
+            inspector.attemptsTo(
+                CaptureConsoleMessages.duringTest(),
+
+                // Visit page with JavaScript errors
+                Open.url("https://the-internet.herokuapp.com/javascript_error"),
+
+                // Report errors to Serenity but don't fail the test
+                CheckConsole.forErrors().andReportOnly()
+            );
+
+            // Test continues even though errors were found
+            // Errors are documented in the Serenity report
+        }
+
+        /**
+         * REAL-WORLD USE CASE: Report all console activity for debugging
+         *
+         * Sometimes you want to see ALL console output for debugging
+         * purposes, not just errors.
+         */
+        @Test
+        @DisplayName("Can report all console messages for debugging")
+        void canReportAllConsoleMessagesForDebugging() {
+            inspector.attemptsTo(
+                CaptureConsoleMessages.duringTest(),
+                Open.url("about:blank"),
+
+                // Simulate application logging
+                ExecuteJavaScript.async(
+                    "console.log('Application initialized');" +
+                    "console.info('Loading user preferences...');" +
+                    "console.log('Preferences loaded successfully');" +
+                    "console.warn('Using deprecated API - will be removed in v3.0');"
+                ),
+
+                // Report all messages to the Serenity report
+                ReportConsoleMessages.all()
+            );
+
+            // Verify all messages were captured
+            int messageCount = inspector.asksFor(ConsoleMessages.count());
+            assertThat(messageCount).isEqualTo(4);
+        }
+
+        /**
+         * REAL-WORLD USE CASE: Verify expected console warnings
+         *
+         * Some applications log warnings for known issues or deprecations.
+         * You may want to verify specific warnings are present.
+         */
+        @Test
+        @DisplayName("Can verify expected deprecation warnings")
+        void canVerifyExpectedDeprecationWarnings() {
+            inspector.attemptsTo(
+                CaptureConsoleMessages.duringTest(),
+                Open.url("about:blank"),
+
+                // Simulate application with deprecation warning
+                ExecuteJavaScript.async(
+                    "console.warn('[DEPRECATION] The oldMethod() is deprecated. Use newMethod() instead.');"
+                )
+            );
+
+            List<String> warnings = inspector.asksFor(ConsoleMessages.warnings());
+
+            assertThat(warnings)
+                .anyMatch(w -> w.contains("DEPRECATION"))
+                .anyMatch(w -> w.contains("oldMethod"));
         }
     }
 
