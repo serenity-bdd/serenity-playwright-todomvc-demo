@@ -396,7 +396,8 @@ class WhenCapturingNetworkAndConsoleTest {
                 ),
 
                 // Report all messages to the Serenity report
-                ReportConsoleMessages.all()
+                ReportConsoleMessages.all(),
+                CheckConsole.forErrorsAndWarnings().andReportOnly()
             );
 
             // Verify all messages were captured
