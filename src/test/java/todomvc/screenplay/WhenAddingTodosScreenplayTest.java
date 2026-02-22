@@ -1,10 +1,8 @@
 package todomvc.screenplay;
 
-import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import todomvc.screenplay.questions.TheRemainingCount;
 import todomvc.screenplay.questions.TheTodoItem;
 import todomvc.screenplay.questions.TheVisibleTodos;
@@ -19,7 +17,6 @@ import todomvc.screenplay.tasks.OpenTodoMvcApp;
  * - Verifying todo counts
  * - Checking todo visibility
  */
-@ExtendWith(SerenityJUnit5Extension.class)
 @DisplayName("When adding todos (Screenplay)")
 class WhenAddingTodosScreenplayTest extends ScreenplayPlaywrightTest {
 

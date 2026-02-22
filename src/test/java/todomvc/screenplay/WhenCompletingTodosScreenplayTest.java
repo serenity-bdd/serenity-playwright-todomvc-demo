@@ -1,11 +1,9 @@
 package todomvc.screenplay;
 
-import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import todomvc.screenplay.questions.TheClearCompletedButton;
 import todomvc.screenplay.questions.TheRemainingCount;
 import todomvc.screenplay.questions.TheTodoItem;
@@ -24,7 +22,6 @@ import todomvc.screenplay.tasks.ToggleAll;
  * - Toggling all todos
  * - Clearing completed todos
  */
-@ExtendWith(SerenityJUnit5Extension.class)
 @DisplayName("When completing todos (Screenplay)")
 class WhenCompletingTodosScreenplayTest extends ScreenplayPlaywrightTest {
 

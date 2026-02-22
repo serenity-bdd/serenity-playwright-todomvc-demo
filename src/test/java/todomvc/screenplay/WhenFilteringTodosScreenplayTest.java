@@ -1,11 +1,9 @@
 package todomvc.screenplay;
 
-import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import todomvc.screenplay.questions.TheCurrentFilter;
 import todomvc.screenplay.questions.TheVisibleTodos;
 import todomvc.screenplay.tasks.AddATodoItem;
@@ -20,7 +18,6 @@ import todomvc.screenplay.tasks.OpenTodoMvcApp;
  * - Filtering by All, Active, and Completed
  * - Verifying filter state
  */
-@ExtendWith(SerenityJUnit5Extension.class)
 @DisplayName("When filtering todos (Screenplay)")
 class WhenFilteringTodosScreenplayTest extends ScreenplayPlaywrightTest {
 
