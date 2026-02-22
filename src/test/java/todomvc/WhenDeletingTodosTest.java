@@ -1,11 +1,10 @@
 package todomvc;
 
+import com.microsoft.playwright.Page;
 import net.serenitybdd.annotations.Steps;
-import net.serenitybdd.junit5.SerenityJUnit5Extension;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import todomvc.steps.TodoSteps;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -13,7 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for deleting todo items in the TodoMVC application.
  */
-@ExtendWith(SerenityJUnit5Extension.class)
 @DisplayName("When deleting todos")
 class WhenDeletingTodosTest extends SerenityPlaywrightTest {
 
@@ -21,7 +19,7 @@ class WhenDeletingTodosTest extends SerenityPlaywrightTest {
     TodoSteps todo;
 
     @BeforeEach
-    void setUp() {
+    void setUp(Page page) {
         todo.setPage(page);
     }
 
@@ -86,5 +84,4 @@ class WhenDeletingTodosTest extends SerenityPlaywrightTest {
 
         assertThat(todo.remainingCount()).isEqualTo(2);
     }
-
 }

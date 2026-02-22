@@ -2,6 +2,7 @@ package todomvc.steps;
 
 import com.microsoft.playwright.Page;
 import net.serenitybdd.annotations.Step;
+import net.serenitybdd.playwright.PlaywrightSerenity;
 import todomvc.pages.TodoMvcPage;
 
 import java.util.List;
@@ -13,6 +14,12 @@ import java.util.List;
  * Methods either perform actions or return data for assertions in tests.
  * Assertions themselves belong in the test class, not here.
  * </p>
+ * <p>
+ * When using {@code @UsePlaywright}, call {@link #setPage(Page)} in your
+ * {@code @BeforeEach} method with the injected Page. The page object is
+ * lazily initialized from {@code PlaywrightSerenity.getCurrentPage()} if
+ * not explicitly set.
+ * </p>
  */
 public class TodoSteps {
 
@@ -22,76 +29,86 @@ public class TodoSteps {
         this.todoMvcPage = new TodoMvcPage(page);
     }
 
+    private TodoMvcPage page() {
+        if (todoMvcPage == null) {
+            Page currentPage = PlaywrightSerenity.getCurrentPage();
+            if (currentPage != null) {
+                todoMvcPage = new TodoMvcPage(currentPage);
+            }
+        }
+        return todoMvcPage;
+    }
+
     // ========== Navigation Steps ==========
 
     @Step("Open the TodoMVC application")
     public void openApplication() {
-        todoMvcPage.open();
+        page().open();
     }
 
     // ========== Adding Todo Steps ==========
 
     @Step("Add a todo: '{0}'")
     public void addTodo(String todoText) {
-        todoMvcPage.addTodo(todoText);
+        page().addTodo(todoText);
     }
 
     @Step("Add todos: {0}")
     public void addTodos(String... todoTexts) {
-        todoMvcPage.addTodos(todoTexts);
+        page().addTodos(todoTexts);
     }
 
     // ========== Completing Todo Steps ==========
 
     @Step("Complete the todo: '{0}'")
     public void completeTodo(String todoText) {
-        todoMvcPage.completeTodo(todoText);
+        page().completeTodo(todoText);
     }
 
     @Step("Toggle all todos")
     public void toggleAll() {
-        todoMvcPage.toggleAll();
+        page().toggleAll();
     }
 
     // ========== Editing Todo Steps ==========
 
     @Step("Edit todo '{0}' to '{1}'")
     public void editTodo(String oldText, String newText) {
-        todoMvcPage.editTodo(oldText, newText);
+        page().editTodo(oldText, newText);
     }
 
     @Step("Cancel editing the todo: '{0}'")
     public void cancelEdit(String todoText) {
-        todoMvcPage.cancelEdit(todoText);
+        page().cancelEdit(todoText);
     }
 
     // ========== Deleting Todo Steps ==========
 
     @Step("Delete the todo: '{0}'")
     public void deleteTodo(String todoText) {
-        todoMvcPage.deleteTodo(todoText);
+        page().deleteTodo(todoText);
     }
 
     @Step("Clear all completed todos")
     public void clearCompleted() {
-        todoMvcPage.clearCompleted();
+        page().clearCompleted();
     }
 
     // ========== Filtering Steps ==========
 
     @Step("Filter to show all todos")
     public void filterAll() {
-        todoMvcPage.filterAll();
+        page().filterAll();
     }
 
     @Step("Filter to show active todos only")
     public void filterActive() {
-        todoMvcPage.filterActive();
+        page().filterActive();
     }
 
     @Step("Filter to show completed todos only")
     public void filterCompleted() {
-        todoMvcPage.filterCompleted();
+        page().filterCompleted();
     }
 
     // ========== Query Methods (return data for assertions in tests) ==========

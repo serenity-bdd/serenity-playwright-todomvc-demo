@@ -1,34 +1,41 @@
 package todomvc;
 
-import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserType;
-import com.microsoft.playwright.Page;
-import com.microsoft.playwright.Playwright;
-import net.serenitybdd.playwright.PlaywrightSerenity;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.microsoft.playwright.junit.Options;
+import com.microsoft.playwright.junit.OptionsFactory;
+import com.microsoft.playwright.junit.UsePlaywright;
+import net.serenitybdd.junit5.SerenityJUnit5Extension;
+import net.serenitybdd.playwright.junit5.SerenityPlaywrightExtension;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import java.util.Arrays;
+
+/**
+ * Base test class for Page Object-based Playwright tests with Serenity BDD.
+ * <p>
+ * {@code @UsePlaywright} manages the full browser lifecycle (Playwright, Browser,
+ * BrowserContext, Page) and the {@code SerenityPlaywrightExtension} automatically
+ * registers injected Page instances with Serenity for screenshot capture.
+ * </p>
+ * <p>
+ * Subclasses receive a {@code Page} parameter in their {@code @BeforeEach} and
+ * {@code @Test} methods — no manual setup or teardown is needed.
+ * </p>
+ */
+@ExtendWith(SerenityJUnit5Extension.class)
+@ExtendWith(SerenityPlaywrightExtension.class)
+@UsePlaywright(SerenityPlaywrightTest.ChromeHeadlessOptions.class)
 public abstract class SerenityPlaywrightTest {
 
-    protected Playwright playwright;
-    protected Browser browser;
-    protected Page page;
-
-    @BeforeEach
-    void setUpPlaywright() {
-        playwright = Playwright.create();
-        browser = playwright.chromium().launch(
-                new BrowserType.LaunchOptions().setHeadless(true)
-        );
-        page = browser.newPage();
-        PlaywrightSerenity.registerPage(page);
-    }
-
-    @AfterEach
-    void tearDownPlaywright() {
-        PlaywrightSerenity.unregisterPage(page);
-        if (page != null) page.close();
-        if (browser != null) browser.close();
-        if (playwright != null) playwright.close();
+    public static class ChromeHeadlessOptions implements OptionsFactory {
+        @Override
+        public Options getOptions() {
+            return new Options()
+                    .setHeadless(true)
+                    .setLaunchOptions(
+                            new BrowserType.LaunchOptions()
+                                    .setArgs(Arrays.asList("--no-sandbox", "--disable-extensions", "--disable-gpu"))
+                    );
+        }
     }
 }
